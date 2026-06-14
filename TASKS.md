@@ -132,8 +132,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク D: セクション + 解説パネル統合
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: session-D/sections
+- [x] 完了
 
 ### 触ってよいファイル
 - `src/components/sections/OscillatorSection.tsx`

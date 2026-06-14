@@ -51,6 +51,12 @@ public:
     /** ビジュアライザがオーディオデータを取得するための AudioVisualiserComponent */
     juce::AudioVisualiserComponent& getAudioVisualiser() { return audioVisualiser; }
 
+    /** スペクトラム分析用 FIFO（SpectrumDisplay が timerCallback で読み出す）
+     *  オーディオスレッドが書き込み、UI スレッドが読み出す lock-free 構成。 */
+    static constexpr int kSpectrumFifoSize = 4096;
+    juce::AbstractFifo& getSpectrumFifo() noexcept       { return spectrumFifo; }
+    juce::AudioBuffer<float>& getSpectrumFifoBuffer() noexcept { return spectrumFifoBuffer; }
+
 private:
     juce::AudioProcessorValueTreeState apvts;
     juce::MidiKeyboardState keyboardState;
@@ -58,6 +64,10 @@ private:
 
     // ビジュアライザ用（Session C が描画読み出し、Processor が processBlock 時に書き込み）
     juce::AudioVisualiserComponent audioVisualiser { 1 }; // モノラル
+
+    // スペクトラム表示用 FIFO（Session C / SpectrumDisplay が消費）
+    juce::AbstractFifo spectrumFifo { kSpectrumFifoSize };
+    juce::AudioBuffer<float> spectrumFifoBuffer { 1, kSpectrumFifoSize };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessor)
 };

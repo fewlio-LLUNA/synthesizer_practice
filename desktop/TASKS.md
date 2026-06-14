@@ -248,3 +248,9 @@ worktree 上で完結させ、main にマージする。
 ## 変更履歴（I/F 変更があったらここに追記）
 
 - 2026-06-15: 初期 I/F 確定（`Parameters.h` v1.0）
+- 2026-06-15: [Session C] `PluginProcessor` に spectrum FIFO 追加
+  - `kSpectrumFifoSize` (= 4096) 定数、`spectrumFifo`、`spectrumFifoBuffer` メンバ追加
+  - `getSpectrumFifo()` / `getSpectrumFifoBuffer()` getter 追加
+  - `processBlock` でオーディオ ch0 を FIFO に push
+  - `prepareToPlay` で FIFO リセット
+  - → `SpectrumDisplay` が `timerCallback` で読み出して FFT 描画するため

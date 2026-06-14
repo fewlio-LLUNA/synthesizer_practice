@@ -32,6 +32,8 @@ void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     synth.setCurrentPlaybackSampleRate(sampleRate);
     audioVisualiser.clear();
+    spectrumFifo.reset();
+    spectrumFifoBuffer.clear();
 
     // TODO: Session A — 各 DSP モジュール（Filter, Envelope, Effects）を prepare
     juce::ignoreUnused(samplesPerBlock);
@@ -65,6 +67,23 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     // ビジュアライザに送る（モノラル化）
     audioVisualiser.pushBuffer(buffer);
+
+    // スペクトラム FIFO に書き込み（ch0 のみ、UI スレッドの SpectrumDisplay が消費）
+    {
+        const int numSamples = buffer.getNumSamples();
+        const int numToWrite = juce::jmin(numSamples, spectrumFifo.getFreeSpace());
+        if (numToWrite > 0)
+        {
+            int start1, size1, start2, size2;
+            spectrumFifo.prepareToWrite(numToWrite, start1, size1, start2, size2);
+            const float* src = buffer.getReadPointer(0);
+            if (size1 > 0)
+                spectrumFifoBuffer.copyFrom(0, start1, src, size1);
+            if (size2 > 0)
+                spectrumFifoBuffer.copyFrom(0, start2, src + size1, size2);
+            spectrumFifo.finishedWrite(size1 + size2);
+        }
+    }
 }
 
 juce::AudioProcessorEditor* SynthAudioProcessor::createEditor()

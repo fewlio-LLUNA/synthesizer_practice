@@ -39,3 +39,29 @@ coverage/
 
 # セッション作業用（git worktree）
 worktrees/
+
+# === デスクトップ版（C++ / JUCE / CMake） ===
+# CMake ビルドディレクトリ
+build/
+desktop/build/
+desktop/cmake-build-*/
+
+# Projucer 生成ファイル（CMake 採用なので使わないが念のため）
+desktop/Builds/
+desktop/JuceLibraryCode/
+
+# Visual Studio
+*.vcxproj.user
+*.opensdf
+*.sdf
+.vs/
+desktop/.vs/
+
+# CLion / JetBrains
+desktop/.idea/
+
+# CMake user presets（個人の絶対パスが入ることがある）
+CMakeUserPresets.json
+
+# JUCE ローカルクローン（git submodule で desktop/JUCE を使う場合は除外解除）
+# desktop/JUCE/

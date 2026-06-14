@@ -39,8 +39,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク A: 音声エンジン
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: session-A/audio-engine
+- [x] 完了
 
 ### 触ってよいファイル
 - `src/audio/SynthEngine.ts`

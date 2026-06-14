@@ -104,8 +104,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク C: ビジュアライザ
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: session-C
+- [x] 完了
 
 ### 触ってよいファイル
 - `src/components/WaveformView.tsx`

@@ -72,8 +72,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク B: UIプリミティブ（Knob + 共通スタイル）
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: session-B/knob
+- [x] 完了
 
 ### 触ってよいファイル
 - `src/components/Knob.tsx`

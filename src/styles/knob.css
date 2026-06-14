@@ -1,0 +1,41 @@
+/* Knob コンポーネントのスタイル（ハードシンセ風） */
+
+.knob {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  min-width: 60px;
+  user-select: none;
+}
+
+.knob__dial {
+  cursor: ns-resize;
+  overflow: visible;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+  transition: filter 0.15s ease;
+}
+
+.knob__dial:hover {
+  filter: drop-shadow(0 2px 8px rgba(255, 140, 0, 0.4));
+}
+
+.knob__label {
+  font-size: 10px;
+  color: var(--color-text-dim);
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.knob__value {
+  font-size: 10px;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  min-height: 14px;
+  pointer-events: none;
+}

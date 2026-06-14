@@ -1,0 +1,58 @@
+/* グローバルスタイル（ハードシンセ風・黒パネル） */
+/* 詳細スタイリングは Session B が担当 */
+
+:root {
+  --color-bg: #1a1a1a;
+  --color-panel: #2a2a2a;
+  --color-panel-border: #444;
+  --color-text: #e0e0e0;
+  --color-text-dim: #888;
+  --color-accent: #ff8c00;
+  --color-accent-dim: #b36400;
+  --color-knob: #3a3a3a;
+  --color-knob-indicator: #ff8c00;
+
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-text-dim);
+}
+
+.visualizer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sections-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}

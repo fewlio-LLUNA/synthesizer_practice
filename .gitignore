@@ -1,0 +1,41 @@
+# 依存
+node_modules/
+
+# ビルド成果物
+dist/
+dist-ssr/
+*.local
+
+# ログ
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# エディタ・OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# 環境変数
+.env
+.env.local
+.env.*.local
+
+# テスト
+coverage/
+
+# Vercel
+.vercel/
+
+# セッション作業用（git worktree）
+worktrees/

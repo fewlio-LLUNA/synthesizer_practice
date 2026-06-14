@@ -1,20 +1,25 @@
 import { useState } from 'react';
-import type { SectionProps, FilterType } from '../../types';
+import type { SectionProps, FilterType, FilterParams } from '../../types';
 import { useSynthEngine } from '../../audio/engineContext';
 import { DEFAULT_FILTER } from '../../data/defaults';
 import { Knob } from '../Knob';
 
-const FILTER_TYPES: { value: FilterType; label: string }[] = [
-  { value: 'lowpass', label: 'LP' },
-  { value: 'highpass', label: 'HP' },
-  { value: 'bandpass', label: 'BP' },
+const FILTER_TYPES: { value: FilterType; label: string; paramId: string }[] = [
+  { value: 'lowpass', label: 'LP', paramId: 'filter.type.lowpass' },
+  { value: 'highpass', label: 'HP', paramId: 'filter.type.highpass' },
+  { value: 'bandpass', label: 'BP', paramId: 'filter.type.bandpass' },
 ];
 
-export function FilterSection({ onParamHover }: SectionProps) {
+interface Props extends SectionProps {
+  initialParams?: FilterParams;
+}
+
+export function FilterSection({ onParamHover, initialParams }: Props) {
   const engine = useSynthEngine();
-  const [filterType, setFilterType] = useState<FilterType>(DEFAULT_FILTER.type);
-  const [cutoff, setCutoff] = useState(DEFAULT_FILTER.cutoff);
-  const [resonance, setResonance] = useState(DEFAULT_FILTER.resonance);
+  const init = initialParams ?? DEFAULT_FILTER;
+  const [filterType, setFilterType] = useState<FilterType>(init.type);
+  const [cutoff, setCutoff] = useState(init.cutoff);
+  const [resonance, setResonance] = useState(init.resonance);
 
   const handleTypeChange = (value: FilterType) => {
     setFilterType(value);
@@ -34,11 +39,26 @@ export function FilterSection({ onParamHover }: SectionProps) {
   return (
     <div style={panelStyle}>
       <h3 style={titleStyle}>Filter</h3>
-      <div style={{ marginBottom: '10px' }}>
+      <div
+        style={{ marginBottom: '10px' }}
+        onMouseEnter={() => onParamHover('filter.type')}
+        onMouseLeave={() => onParamHover(null)}
+      >
         <div style={rowLabelStyle}>Type</div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {FILTER_TYPES.map(({ value, label }) => (
-            <label key={value} style={radioLabelStyle}>
+          {FILTER_TYPES.map(({ value, label, paramId }) => (
+            <label
+              key={value}
+              style={radioLabelStyle}
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                onParamHover(paramId);
+              }}
+              onMouseLeave={(e) => {
+                e.stopPropagation();
+                onParamHover('filter.type');
+              }}
+            >
               <input
                 type="radio"
                 name="filter-type"

@@ -13,6 +13,38 @@ const CONTAINER_STYLE: React.CSSProperties = {
   borderRadius: '4px',
   padding: '8px',
   height: '160px',
+  display: 'flex',
+  flexDirection: 'column',
+  // grid item として canvas の自然サイズに引きずられないようにする
+  minWidth: 0,
+  overflow: 'hidden',
+};
+
+const HEADER_STYLE: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: '6px',
+  marginBottom: '4px',
+};
+
+const TITLE_STYLE: React.CSSProperties = {
+  fontSize: '11px',
+  fontWeight: 600,
+  color: 'var(--color-accent)',
+  letterSpacing: '0.05em',
+};
+
+const CAPTION_STYLE: React.CSSProperties = {
+  fontSize: '10px',
+  color: 'var(--color-text-dim)',
+};
+
+const CANVAS_AREA_STYLE: React.CSSProperties = {
+  position: 'relative',
+  flex: 1,
+  // 子の canvas の自然サイズに引きずられないようにする
+  minHeight: 0,
+  minWidth: 0,
 };
 
 const OVERLAY_STYLE: React.CSSProperties = {
@@ -32,23 +64,32 @@ function xToFrequency(normalizedX: number): number {
   return F_MIN * Math.exp(LOG_RATIO * normalizedX);
 }
 
-export function SpectrumView() {
+interface Props {
+  onParamHover?: (paramId: string | null) => void;
+}
+
+export function SpectrumView({ onParamHover }: Props = {}) {
   const engine = useSynthEngine();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasAreaRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
 
-  // Canvasの描画バッファをCSSサイズに同期する
+  // canvasの描画バッファを親エリアのサイズに同期する。
+  // canvas自体を観測すると、内在サイズとレイアウトが循環して中央がずれる。
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const area = canvasAreaRef.current;
+    if (!canvas || !area) return;
 
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
-        canvas.width = Math.floor(entry.contentRect.width);
-        canvas.height = Math.floor(entry.contentRect.height);
+        const w = Math.max(1, Math.floor(entry.contentRect.width));
+        const h = Math.max(1, Math.floor(entry.contentRect.height));
+        canvas.width = w;
+        canvas.height = h;
       }
     });
-    observer.observe(canvas);
+    observer.observe(area);
 
     return () => observer.disconnect();
   }, []);
@@ -101,12 +142,22 @@ export function SpectrumView() {
   }, [engine]);
 
   return (
-    <div style={CONTAINER_STYLE}>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      />
-      {!engine && <div style={OVERLAY_STYLE}>未接続</div>}
+    <div
+      style={CONTAINER_STYLE}
+      onMouseEnter={() => onParamHover?.('visualizer.spectrum')}
+      onMouseLeave={() => onParamHover?.(null)}
+    >
+      <div style={HEADER_STYLE}>
+        <span style={TITLE_STYLE}>周波数スペクトラム</span>
+        <span style={CAPTION_STYLE}>— 含まれる倍音の分布（左=低音、右=高音）</span>
+      </div>
+      <div ref={canvasAreaRef} style={CANVAS_AREA_STYLE}>
+        <canvas
+          ref={canvasRef}
+          style={{ width: '100%', height: '100%', display: 'block' }}
+        />
+        {!engine && <div style={OVERLAY_STYLE}>未接続</div>}
+      </div>
     </div>
   );
 }

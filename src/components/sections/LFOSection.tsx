@@ -1,28 +1,33 @@
 import { useState } from 'react';
-import type { SectionProps, LFOTarget, WaveformType } from '../../types';
+import type { SectionProps, LFOTarget, WaveformType, LFOParams } from '../../types';
 import { useSynthEngine } from '../../audio/engineContext';
 import { DEFAULT_LFO } from '../../data/defaults';
 import { Knob } from '../Knob';
 
-const WAVEFORMS: { value: WaveformType; label: string }[] = [
-  { value: 'sine', label: 'Sin' },
-  { value: 'sawtooth', label: 'Saw' },
-  { value: 'square', label: 'Sqr' },
-  { value: 'triangle', label: 'Tri' },
+interface Props extends SectionProps {
+  initialParams?: LFOParams;
+}
+
+const WAVEFORMS: { value: WaveformType; label: string; paramId: string }[] = [
+  { value: 'sine', label: 'Sin', paramId: 'oscillator.waveform.sine' },
+  { value: 'sawtooth', label: 'Saw', paramId: 'oscillator.waveform.sawtooth' },
+  { value: 'square', label: 'Sqr', paramId: 'oscillator.waveform.square' },
+  { value: 'triangle', label: 'Tri', paramId: 'oscillator.waveform.triangle' },
 ];
 
-const LFO_TARGETS: { value: LFOTarget; label: string }[] = [
-  { value: 'pitch', label: 'Pitch' },
-  { value: 'filter', label: 'Filter' },
-  { value: 'amp', label: 'Amp' },
+const LFO_TARGETS: { value: LFOTarget; label: string; paramId: string }[] = [
+  { value: 'pitch', label: 'Pitch', paramId: 'lfo.target.pitch' },
+  { value: 'filter', label: 'Filter', paramId: 'lfo.target.filter' },
+  { value: 'amp', label: 'Amp', paramId: 'lfo.target.amp' },
 ];
 
-export function LFOSection({ onParamHover }: SectionProps) {
+export function LFOSection({ onParamHover, initialParams }: Props) {
   const engine = useSynthEngine();
-  const [rate, setRate] = useState(DEFAULT_LFO.rate);
-  const [depth, setDepth] = useState(DEFAULT_LFO.depth);
-  const [target, setTarget] = useState<LFOTarget>(DEFAULT_LFO.target);
-  const [waveform, setWaveform] = useState<WaveformType>(DEFAULT_LFO.waveform);
+  const init = initialParams ?? DEFAULT_LFO;
+  const [rate, setRate] = useState(init.rate);
+  const [depth, setDepth] = useState(init.depth);
+  const [target, setTarget] = useState<LFOTarget>(init.target);
+  const [waveform, setWaveform] = useState<WaveformType>(init.waveform);
 
   const handleRateChange = (value: number) => {
     setRate(value);
@@ -47,11 +52,26 @@ export function LFOSection({ onParamHover }: SectionProps) {
   return (
     <div style={panelStyle}>
       <h3 style={titleStyle}>LFO</h3>
-      <div style={{ marginBottom: '6px' }}>
+      <div
+        style={{ marginBottom: '6px' }}
+        onMouseEnter={() => onParamHover('lfo.waveform')}
+        onMouseLeave={() => onParamHover(null)}
+      >
         <div style={rowLabelStyle}>Waveform</div>
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-          {WAVEFORMS.map(({ value, label }) => (
-            <label key={value} style={radioLabelStyle}>
+          {WAVEFORMS.map(({ value, label, paramId }) => (
+            <label
+              key={value}
+              style={radioLabelStyle}
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                onParamHover(paramId);
+              }}
+              onMouseLeave={(e) => {
+                e.stopPropagation();
+                onParamHover('lfo.waveform');
+              }}
+            >
               <input
                 type="radio"
                 name="lfo-waveform"
@@ -65,11 +85,26 @@ export function LFOSection({ onParamHover }: SectionProps) {
           ))}
         </div>
       </div>
-      <div style={{ marginBottom: '8px' }}>
+      <div
+        style={{ marginBottom: '8px' }}
+        onMouseEnter={() => onParamHover('lfo.target')}
+        onMouseLeave={() => onParamHover(null)}
+      >
         <div style={rowLabelStyle}>Target</div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {LFO_TARGETS.map(({ value, label }) => (
-            <label key={value} style={radioLabelStyle}>
+          {LFO_TARGETS.map(({ value, label, paramId }) => (
+            <label
+              key={value}
+              style={radioLabelStyle}
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                onParamHover(paramId);
+              }}
+              onMouseLeave={(e) => {
+                e.stopPropagation();
+                onParamHover('lfo.target');
+              }}
+            >
               <input
                 type="radio"
                 name="lfo-target"

@@ -2,20 +2,34 @@
 
 import type { OscillatorParams, WaveformType } from '../types';
 
+const CENTS_PER_OCTAVE = 1200;
+
 /** MIDIノート番号（0〜127）を Hz（A4=440Hz基準）に変換 */
 export function midiToHz(note: number): number {
   return 440 * Math.pow(2, (note - 69) / 12);
 }
 
-/** OscillatorNode を1ボイス分ラップする。SynthEngine が noteOn ごとに生成する */
+/** OscillatorNode を1ボイス分ラップする。SynthEngine が noteOn ごとに生成する。
+ *  unisonOffset はユニゾン使用時に各 osc を均等に分散させるためのデチューン（セント） */
 export class Oscillator {
   private readonly osc: OscillatorNode;
+  private userDetune: number;
+  private octave: number;
+  private readonly unisonOffset: number;
 
-  constructor(ctx: AudioContext, params: OscillatorParams, frequency: number) {
+  constructor(
+    ctx: AudioContext,
+    params: OscillatorParams,
+    frequency: number,
+    unisonOffset = 0,
+  ) {
     this.osc = ctx.createOscillator();
     this.osc.type = params.waveform;
-    this.osc.detune.value = params.detune;
+    this.userDetune = params.detune;
+    this.octave = params.octave;
+    this.unisonOffset = unisonOffset;
     this.osc.frequency.value = frequency;
+    this.applyDetune();
   }
 
   get outputNode(): AudioNode { return this.osc; }
@@ -29,5 +43,20 @@ export class Oscillator {
   }
 
   setWaveform(waveform: WaveformType): void { this.osc.type = waveform; }
-  setDetune(detune: number): void { this.osc.detune.value = detune; }
+
+  setDetune(detune: number): void {
+    this.userDetune = detune;
+    this.applyDetune();
+  }
+
+  setOctave(octave: number): void {
+    this.octave = octave;
+    this.applyDetune();
+  }
+
+  /** ユーザー指定の detune + オクターブシフト + ユニゾンオフセット を合成して detune.value に反映する */
+  private applyDetune(): void {
+    this.osc.detune.value =
+      this.userDetune + this.octave * CENTS_PER_OCTAVE + this.unisonOffset;
+  }
 }

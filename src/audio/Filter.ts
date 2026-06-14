@@ -16,6 +16,8 @@ export class Filter {
   get inputNode(): AudioNode { return this.node; }
   get outputNode(): AudioNode { return this.node; }
   get frequencyParam(): AudioParam { return this.node.frequency; }
+  /** カットオフに対する cents 単位のオフセット。フィルターエンベロープが書き込む */
+  get detuneParam(): AudioParam { return this.node.detune; }
 
   setType(type: FilterType): void { this.node.type = type; }
   setCutoff(hz: number): void { this.node.frequency.value = hz; }

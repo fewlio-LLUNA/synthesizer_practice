@@ -11,6 +11,21 @@ export interface OscillatorParams {
   waveform: WaveformType;
   /** デチューン（cent 単位、-1200〜+1200） */
   detune: number;
+  /** オクターブシフト（-2〜+2）。1段で1オクターブ（1200セント）変化する */
+  octave: number;
+  /** オシレーターの音量（0〜1）。Noise とのミックス比に使う */
+  level: number;
+}
+
+// ---------- ノイズジェネレータ ----------
+
+export type NoiseType = 'white' | 'pink';
+
+export interface NoiseParams {
+  /** ノイズ種別 */
+  type: NoiseType;
+  /** ノイズの音量（0〜1）。0 で無効 */
+  level: number;
 }
 
 // ---------- フィルター ----------
@@ -39,6 +54,16 @@ export interface EnvelopeParams {
   release: number;
 }
 
+/** フィルターエンベロープ。EnvelopeParams に効きの強さ amount を加えたもの */
+export interface FilterEnvelopeParams extends EnvelopeParams {
+  /**
+   * エンベロープがフィルターカットオフに与える影響の強さ（-1〜+1）。
+   * 0 で無効。正で「開く（明るく）」、負で「閉じる（暗く）」方向。
+   * 1.0 で約5オクターブ分の周波数変化を与える。
+   */
+  amount: number;
+}
+
 // ---------- LFO ----------
 
 export type LFOTarget = 'pitch' | 'filter' | 'amp';
@@ -54,6 +79,56 @@ export interface LFOParams {
   waveform: WaveformType;
 }
 
+// ---------- ユニゾン ----------
+
+export interface UnisonParams {
+  /** ユニゾンを構成するオシレーター数（1〜8）。1で無効（単一オシレーター） */
+  count: number;
+  /** デチューンの広がり（セント、0〜100）。両端の osc がこの幅で広がる */
+  detune: number;
+}
+
+// ---------- 演奏設定（グライドなど） ----------
+
+export interface PerformanceParams {
+  /** グライド（ポルタメント）時間（秒、0〜2）。0で無効。
+   *  前ノートの周波数から今ノートの周波数まで滑らかに移行する。 */
+  glide: number;
+}
+
+// ---------- ドライブ／ディストーション ----------
+
+export type DriveType = 'soft' | 'hard';
+
+export interface DriveParams {
+  /** 歪みの種類。soft はオーバードライブ風、hard はディストーション風 */
+  type: DriveType;
+  /** 歪みの強さ（0〜1）。0で無効、1で激しい歪み */
+  drive: number;
+  /** Wet/Dry ミックス（0〜1）。0でドライのみ */
+  mix: number;
+}
+
+// ---------- ディレイ ----------
+
+export interface DelayParams {
+  /** ディレイタイム（秒、0.01〜2） */
+  time: number;
+  /** フィードバック量（0〜0.95）。1以上にすると発振するので上限を制限する */
+  feedback: number;
+  /** Wet/Dry ミックス（0〜1）。0で完全ドライ（無効）、1で完全ウェット */
+  mix: number;
+}
+
+// ---------- リバーブ ----------
+
+export interface ReverbParams {
+  /** 減衰時間（秒、0.1〜10）。インパルス応答の長さ */
+  decay: number;
+  /** Wet/Dry ミックス（0〜1）。0で無効 */
+  mix: number;
+}
+
 // ---------- プリセット ----------
 
 export interface SynthPreset {
@@ -65,6 +140,16 @@ export interface SynthPreset {
   filter: FilterParams;
   envelope: EnvelopeParams;
   lfo: LFOParams;
+  // 以下は後付けのため optional（未指定なら現在値を維持）
+  noise?: NoiseParams;
+  filterEnvelope?: FilterEnvelopeParams;
+  drive?: DriveParams;
+  delay?: DelayParams;
+  reverb?: ReverbParams;
+  unison?: UnisonParams;
+  performance?: PerformanceParams;
+  /** マスター音量（0〜1）。未指定なら現在値を維持 */
+  masterVolume?: number;
 }
 
 // ---------- パラメータ説明文（解説パネル用） ----------
@@ -100,12 +185,27 @@ export interface ISynthEngine {
 
   /** オシレーターパラメータを更新 */
   setOscillatorParams(params: Partial<OscillatorParams>): void;
+  /** ユニゾン設定を更新（count 変更は次回ノートオンから反映） */
+  setUnisonParams(params: Partial<UnisonParams>): void;
+  /** 演奏設定（グライドなど）を更新 */
+  setPerformanceParams(params: Partial<PerformanceParams>): void;
+  /** ノイズパラメータを更新（level は即時、type は次回ノートオンから） */
+  setNoiseParams(params: Partial<NoiseParams>): void;
   /** フィルターパラメータを更新 */
   setFilterParams(params: Partial<FilterParams>): void;
   /** エンベロープパラメータを更新（次回ノートオンから適用） */
   setEnvelopeParams(params: Partial<EnvelopeParams>): void;
+  /** フィルターエンベロープパラメータを更新（次回ノートオンから適用、amountは即時） */
+  setFilterEnvelopeParams(params: Partial<FilterEnvelopeParams>): void;
   /** LFOパラメータを更新 */
   setLFOParams(params: Partial<LFOParams>): void;
+
+  /** ドライブ（歪み）パラメータを更新 */
+  setDriveParams(params: Partial<DriveParams>): void;
+  /** ディレイパラメータを更新 */
+  setDelayParams(params: Partial<DelayParams>): void;
+  /** リバーブパラメータを更新（decay変更時はIRを再生成するためやや重い） */
+  setReverbParams(params: Partial<ReverbParams>): void;
 
   /** マスター音量（0〜1） */
   setMasterVolume(volume: number): void;

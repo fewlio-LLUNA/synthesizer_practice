@@ -37,6 +37,14 @@ body {
   gap: 16px;
 }
 
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .app-header h1 {
   margin: 0;
   font-size: 18px;
@@ -47,12 +55,16 @@ body {
 
 .visualizer-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr) で grid item が内容の自然サイズより縮められるようにする
+     （canvas の描画バッファが grid を押し広げるのを防ぐ） */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
 }
 
 .sections-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* auto-fit + minmax で画面幅に応じて自動的に列数が調整される。
+     1セクションあたり最低 180px を確保、足りなければ折り返す。 */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }

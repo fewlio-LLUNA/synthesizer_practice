@@ -39,17 +39,34 @@ namespace synth {
 static void ensureJapaneseFont()
 {
     auto& lnf = juce::LookAndFeel::getDefaultLookAndFeel();
-    // Windows 10/11 標準の Yu Gothic UI を優先。なければ Meiryo UI を試す
-    const juce::StringArray candidates { "Yu Gothic UI", "Meiryo UI", "MS Gothic" };
+
+    // Windows で日本語表示が可能なフォントを優先順に試す。
+    // ttc に複数フェイスが入っているケースで JUCE が "Yu Gothic UI" を返さないことが
+    // あるため、UI 付きと無しの両方、和名（ＭＳ ゴシック等）も候補に入れる。
+    const juce::StringArray candidates {
+        "Yu Gothic UI",
+        "Yu Gothic",
+        "Meiryo UI",
+        "Meiryo",
+        "MS UI Gothic",
+        "MS Gothic",
+        "ＭＳ ゴシック",
+        "BIZ UDGothic"
+    };
     const auto available = juce::Font::findAllTypefaceNames();
     for (const auto& name : candidates)
     {
         if (available.contains(name))
         {
             lnf.setDefaultSansSerifTypefaceName(name);
+            DBG("[Font] Using: " << name);
             return;
         }
     }
+
+    // 事前検出に失敗した場合のフォールバック: 名前指定で強制設定（解決は JUCE 任せ）
+    lnf.setDefaultSansSerifTypefaceName("Yu Gothic");
+    DBG("[Font] Fallback to Yu Gothic (not found in findAllTypefaceNames)");
 }
 
 SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)

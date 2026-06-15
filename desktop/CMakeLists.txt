@@ -83,9 +83,9 @@ target_sources(synthesizer_practice
     Source/ui/RotaryKnob.cpp
     Source/ui/SectionPanel.cpp
 
-    # ビジュアライザ（Session C — マージ後に有効化）
-    # Source/ui/WaveformDisplay.cpp
-    # Source/ui/SpectrumDisplay.cpp
+    # ビジュアライザ（Session C）
+    Source/ui/WaveformDisplay.cpp
+    Source/ui/SpectrumDisplay.cpp
 
     # Editor + セクションパネル（Session D）
     Source/ui/InfoPanel.cpp

@@ -121,8 +121,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク C: ビジュアライザ
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: Session C (desktop/session-C/visualizer)
+- [x] 完了
 
 ### 触ってよいファイル
 - `Source/ui/WaveformDisplay.{h,cpp}` （新規）

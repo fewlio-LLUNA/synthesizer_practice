@@ -1,31 +1,51 @@
 # synthesizer_practice
 
-DTMにおけるシンセサイザーを体験的に学ぶアプリ。
+DTMにおけるシンセサイザーを体験的に学ぶ Web アプリ。
 
-このリポジトリには **2つの実装** が含まれています。
+公開 URL: https://synthesizer-practice.vercel.app/
 
-| 実装 | 場所 | 状態 | 技術スタック |
-|---|---|---|---|
-| **Web 版** | [`web/`](./web) | 凍結（メンテのみ） | Vite + React + TypeScript + Web Audio API |
-| **Desktop 版** | [`desktop/`](./desktop) | **開発中（主軸）** | C++ + JUCE + CMake（スタンドアロン + VST3） |
+> **デスクトップ版（C++ + JUCE / Standalone + VST3）** は分離されました:
+> https://github.com/fewlio-LLUNA/synthesizer_practice_win
 
-## Web 版
+## このリポジトリの内容
 
-ブラウザで動作するシンセ。Vercel にデプロイ済み:
-https://synthesizer-practice.vercel.app/
+Vite + React + TypeScript + Web Audio API で書かれたブラウザ版シンセサイザー学習アプリです。
 
-詳しくは [`web/README.md`](./web/README.md) を参照。
+| 機能 | 内容 |
+|---|---|
+| セクション | 11個（Oscillator, Noise, Filter, Filter Env, Amp Env, LFO, Drive, Delay, Reverb, Voice, Master） |
+| プリセット | 10種類（Basic Lead, Super Saw, Wobble Bass, Acid Bass, Dreamy Pad, Pluck, Stab, Strings, Hi-Hat, Wind FX） |
+| ビジュアライザ | 時間波形 + 周波数スペクトラム（リアルタイム） |
+| 解説 | 全パラメータ・全選択肢に日本語解説（ホバー表示） |
+| 鍵盤 | クリック + PCキーボード（A,W,S,E,D...） |
 
-## Desktop 版
+## ファイル構成
 
-JUCE を使った C++ 製のネイティブシンセ。スタンドアロン `.exe` と VST3 プラグインを同時に生成。
+```
+synthesizer_practice/
+├── web/                  # React 実装本体
+│   ├── src/
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   └── vercel.json
+└── README.md
+```
 
-- 計画書: [`docs/desktop-plan.md`](./docs/desktop-plan.md)
-- 詳細設計書: [`docs/desktop-design.md`](./docs/desktop-design.md)
-- ビルド方法・並行開発手順: [`desktop/README.md`](./desktop/README.md)
-- タスク一覧: [`desktop/TASKS.md`](./desktop/TASKS.md)
+## 開発
+
+```powershell
+cd web
+npm install
+npm run dev      # 開発サーバ
+npm run build    # 本番ビルド
+```
+
+## デプロイ
+
+Vercel に GitHub 連携でデプロイ済み。`web/` を Root Directory に指定。
+main ブランチに push すると自動デプロイされます。
 
 ## ライセンス
 
-- ソースコード: MIT
-- JUCE: Personal License（個人利用無料）
+MIT

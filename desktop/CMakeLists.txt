@@ -56,6 +56,18 @@ juce_add_plugin(synthesizer_practice
 juce_generate_juce_header(synthesizer_practice)
 
 # -----------------------------------------------------------------------------
+# 日本語フォントを埋め込みリソースとして組み込む
+# システムフォント解決を迂回し、確実に日本語を描画するため。
+# Noto Sans JP は SIL Open Font License (OFL) — Resources/OFL.txt 参照。
+# -----------------------------------------------------------------------------
+juce_add_binary_data(synth_fonts
+  HEADER_NAME BinaryData.h
+  NAMESPACE BinaryData
+  SOURCES
+    Resources/NotoSansJP-Regular.ttf
+)
+
+# -----------------------------------------------------------------------------
 # ソースファイル
 # 各セッションが追加する dsp/* や ui/* ファイルは
 # CMakeLists.txt の glob ではなく明示的に書くこと（マージ衝突を避けるため）
@@ -115,6 +127,7 @@ target_include_directories(synthesizer_practice
 # JUCE モジュールとリンク
 target_link_libraries(synthesizer_practice
   PRIVATE
+    synth_fonts
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats

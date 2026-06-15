@@ -7,6 +7,12 @@
 
 namespace synth {
 
+/** 埋め込みフォント（Noto Sans JP）の Typeface を返す。
+ *  最初の呼び出しでバイナリリソースから生成し、以降はキャッシュした
+ *  ポインタを返す。全 paint / LookAndFeel で共通利用する。 */
+juce::Typeface::Ptr getEmbeddedJapaneseTypeface();
+
+
 class CustomLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
@@ -61,14 +67,7 @@ public:
      *  ここで強制的に日本語フォントを差し込む。 */
     juce::Typeface::Ptr getTypefaceForFont(const juce::Font& font) override;
 
-    /** 採用された日本語フォント名（デバッグ表示用） */
-    juce::String getJapaneseTypefaceName() const { return japaneseTypefaceName; }
-
-    /** getTypefaceForFont が JUCE 8 で実際に呼ばれたかの確認用カウンタ */
-    int getTypefaceCallCount() const { return typefaceCallCount; }
-
 private:
-    juce::String japaneseTypefaceName; // ctor で解決した実在フォント名を保持
     mutable int typefaceCallCount { 0 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)

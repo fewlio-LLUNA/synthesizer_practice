@@ -2,6 +2,7 @@
 // CustomLookAndFeel.cpp — ハードシンセ風スタイル実装
 // =============================================================================
 #include "CustomLookAndFeel.h"
+#include "BinaryData.h"  // synth_fonts ターゲットが生成（Noto Sans JP のバイナリ）
 #include <cmath>
 
 namespace synth {
@@ -12,31 +13,23 @@ const juce::Colour CustomLookAndFeel::Accent      { 0xFFff8c00 };
 const juce::Colour CustomLookAndFeel::TextPrimary { 0xFFe0e0e0 };
 const juce::Colour CustomLookAndFeel::TextDim     { 0xFF888888 };
 
-// 利用可能な日本語フォントを優先順に試して採用する
-static juce::String pickJapaneseTypefaceName()
+// -----------------------------------------------------------------------------
+// 埋め込みフォントのキャッシュ
+// 初回呼び出しで Noto Sans JP の Typeface を生成し、それを使い回す。
+// -----------------------------------------------------------------------------
+juce::Typeface::Ptr getEmbeddedJapaneseTypeface()
 {
-    const juce::StringArray candidates {
-        "Yu Gothic UI",
-        "Yu Gothic",
-        "Meiryo UI",
-        "Meiryo",
-        "MS UI Gothic",
-        "MS Gothic",
-        "ＭＳ ゴシック",
-        "BIZ UDGothic"
-    };
-    const auto available = juce::Font::findAllTypefaceNames();
-    for (const auto& name : candidates)
-        if (available.contains(name))
-            return name;
-    return "Yu Gothic"; // 最終フォールバック
+    static juce::Typeface::Ptr cached =
+        juce::Typeface::createSystemTypefaceFor(
+            BinaryData::NotoSansJPRegular_ttf,
+            BinaryData::NotoSansJPRegular_ttfSize);
+    return cached;
 }
 
 CustomLookAndFeel::CustomLookAndFeel()
-    : japaneseTypefaceName(pickJapaneseTypefaceName())
 {
-    DBG("[Font] CustomLookAndFeel using: " << japaneseTypefaceName);
-    setDefaultSansSerifTypefaceName(japaneseTypefaceName);
+    // 埋め込み Typeface を「デフォルト sans-serif」として登録
+    setDefaultSansSerifTypeface(getEmbeddedJapaneseTypeface());
 
     setColour(juce::ResizableWindow::backgroundColourId, Background);
     setColour(juce::DocumentWindow::backgroundColourId,  Background);
@@ -129,27 +122,28 @@ void CustomLookAndFeel::drawRotarySlider(
     }
 }
 
-// JUCE 8 では「Yu Gothic UI」のような name 明示指定だと解決失敗で化けるが、
-// name 未指定だと Windows のフォントフォールバックで日本語が表示される。
-// よって全フォント取得は name を渡さず、サイズのみの FontOptions を返す。
+// 埋め込み Typeface を直接 FontOptions に持たせて Font を作る。
+// これでシステムフォント解決を完全に迂回し、確実に日本語が描画される。
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label& /*label*/)
 {
-    return juce::Font(juce::FontOptions(11.0f));
+    return juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface()).withHeight(11.0f));
 }
 
 juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox& box)
 {
-    return juce::Font(juce::FontOptions(juce::jmin(15.0f, (float)box.getHeight() * 0.85f)));
+    return juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface())
+        .withHeight(juce::jmin(15.0f, (float)box.getHeight() * 0.85f)));
 }
 
 juce::Font CustomLookAndFeel::getPopupMenuFont()
 {
-    return juce::Font(juce::FontOptions(13.0f));
+    return juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface()).withHeight(13.0f));
 }
 
 juce::Font CustomLookAndFeel::getTextButtonFont(juce::TextButton& /*button*/, int buttonHeight)
 {
-    return juce::Font(juce::FontOptions(juce::jmin(15.0f, (float)buttonHeight * 0.6f)));
+    return juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface())
+        .withHeight(juce::jmin(15.0f, (float)buttonHeight * 0.6f)));
 }
 
 void CustomLookAndFeel::drawButtonBackground(
@@ -232,15 +226,11 @@ void CustomLookAndFeel::drawPopupMenuItem(
 // -----------------------------------------------------------------------------
 // すべてのフォント要求に日本語対応 Typeface を返す
 // -----------------------------------------------------------------------------
-juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& font)
+juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& /*font*/)
 {
     ++typefaceCallCount;
-    // JUCE 8 では Font::withTypefaceName が削除されたため、FontOptions で再構築する。
-    // サイズ・スタイルは元のフォントから継承し、typeface 名だけ日本語対応に差し替える。
-    return juce::Typeface::createSystemTypefaceFor(
-        juce::FontOptions(japaneseTypefaceName,
-                          font.getHeight(),
-                          font.getStyleFlags()));
+    // 埋め込み Typeface を返す。フォントサイズは Font 側の height で制御される。
+    return getEmbeddedJapaneseTypeface();
 }
 
 } // namespace synth

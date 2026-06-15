@@ -3,6 +3,7 @@
 // =============================================================================
 #include "SpectrumDisplay.h"
 #include "PluginProcessor.h"
+#include "CustomLookAndFeel.h"  // getEmbeddedJapaneseTypeface
 
 namespace synth {
 
@@ -142,14 +143,14 @@ void SpectrumDisplay::paint(juce::Graphics& g)
     auto bounds = getLocalBounds();
     auto header = bounds.removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
+    g.setFont(juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface()).withHeight(13.0f)));
     g.setColour(kAccent);
-    g.drawText("Spectrum", header.removeFromLeft(80),
+    g.drawText("スペクトラム", header.removeFromLeft(100),
                juce::Justification::centredLeft, true);
 
-    g.setFont(juce::Font(juce::FontOptions(11.0f)));
+    g.setFont(juce::Font(juce::FontOptions(getEmbeddedJapaneseTypeface()).withHeight(11.0f)));
     g.setColour(kTextDim);
-    g.drawText("frequency-domain", header, juce::Justification::centredLeft, true);
+    g.drawText("周波数領域", header, juce::Justification::centredLeft, true);
 
     // スペクトラム描画エリア（パネル背景）
     g.setColour(kPanel);

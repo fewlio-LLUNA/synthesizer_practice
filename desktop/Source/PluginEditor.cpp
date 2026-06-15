@@ -174,30 +174,38 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(COL_ACCENT.withAlpha(0.4f));
     g.drawHorizontalLine(HDR_H - 1, 0.0f, static_cast<float>(getWidth()));
 
-    // === DIAGNOSTIC: Typeface のロード状況と複数の構築方法をテスト ===
+    // === DIAGNOSTIC v2: Typeface と Font の中身を確認 ===
     auto tp = synth::getEmbeddedJapaneseTypeface();
+    const juce::String tpName  = tp ? tp->getName()  : juce::String("(null-tp)");
+    const juce::String tpStyle = tp ? tp->getStyle() : juce::String("");
+
+    juce::Font fontA(tp);
+    fontA.setHeight(13.0f);
+    const juce::String fontAName = fontA.getTypefaceName();
+
+    juce::Font fontB(juce::FontOptions(tp).withHeight(13.0f));
+    const juce::String fontBName = fontB.getTypefaceName();
+
     juce::String diag;
     diag << "TF=" << (tp == nullptr ? "NULL" : "OK")
-         << " size=" << (int) BinaryData::NotoSansJPRegular_ttfSize;
+         << " sz=" << (int) BinaryData::NotoSansJPRegular_ttfSize
+         << " tpName=[" << tpName << "/" << tpStyle << "]"
+         << " fontA=[" << fontAName << "]"
+         << " fontB=[" << fontBName << "]";
 
     g.setColour(juce::Colours::lime);
     g.setFont(juce::Font(juce::FontOptions(11.0f)));
     g.drawText(diag, 4, 0, getWidth() - 8, 14, juce::Justification::left);
 
     // 方法 A: Font(Typeface::Ptr) 直接
-    {
-        juce::Font fontA(tp);
-        fontA.setHeight(13.0f);
-        g.setFont(fontA);
-        g.setColour(juce::Colours::yellow);
-        g.drawText("[A]こんにちは シンセ", 4, 16, getWidth(), 14, juce::Justification::left);
-    }
+    g.setFont(fontA);
+    g.setColour(juce::Colours::yellow);
+    g.drawText("[A]こんにちは シンセ", 4, 16, getWidth(), 14, juce::Justification::left);
+
     // 方法 B: FontOptions(Typeface).withHeight
-    {
-        g.setFont(juce::Font(juce::FontOptions(tp).withHeight(13.0f)));
-        g.setColour(juce::Colours::cyan);
-        g.drawText("[B]こんにちは シンセ", 320, 16, getWidth(), 14, juce::Justification::left);
-    }
+    g.setFont(fontB);
+    g.setColour(juce::Colours::cyan);
+    g.drawText("[B]こんにちは シンセ", 320, 16, getWidth(), 14, juce::Justification::left);
 }
 
 // -----------------------------------------------------------------------------

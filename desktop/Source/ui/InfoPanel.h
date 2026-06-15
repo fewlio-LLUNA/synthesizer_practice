@@ -1,26 +1,27 @@
 // =============================================================================
 // InfoPanel.h — ホバー中パラメータの解説を表示するパネル
-// Session E の Descriptions::getDescription と連動予定
+//
+// JUCE 8 では juce::Label の描画パスで日本語が化けるため、内部で Label は
+// 使わず paint() で直接 g.drawText / g.drawFittedText を呼ぶ。
 // =============================================================================
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_gui_basics/juce_gui_basics.h>
 
 namespace synth {
 
 class InfoPanel : public juce::Component
 {
 public:
-    InfoPanel();
+    InfoPanel() = default;
 
-    // パラメータ ID と説明文をセット（PluginEditor のホバーコールバックから呼ぶ）
+    /** パラメータ ID と説明文をセット（PluginEditor のホバーコールバックから呼ぶ） */
     void setInfo(const juce::String& paramId, const juce::String& description);
 
     void paint(juce::Graphics& g) override;
-    void resized() override;
 
 private:
-    juce::Label paramLabel;
-    juce::Label descLabel;
+    juce::String currentParamId;
+    juce::String currentDescription;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InfoPanel)
 };

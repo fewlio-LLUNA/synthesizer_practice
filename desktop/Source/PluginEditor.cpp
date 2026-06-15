@@ -10,6 +10,7 @@
 //   Keyboard    130px  … MidiKeyboardComponent
 // =============================================================================
 #include "PluginEditor.h"
+#include "Descriptions.h"
 
 namespace {
 
@@ -143,8 +144,7 @@ void SynthAudioProcessorEditor::setupHoverCallbacks()
 {
     auto hover = [this](const juce::String& paramId)
     {
-        // TODO: Descriptions::getDescription(paramId) の戻り値を説明文に渡す
-        infoPanel.setInfo(paramId, paramId);
+        infoPanel.setInfo(paramId, getDescription(paramId));
     };
 
     oscPanel.onParamHover       = hover;
@@ -171,15 +171,6 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(COL_ACCENT.withAlpha(0.4f));
     g.drawHorizontalLine(HDR_H - 1, 0.0f, static_cast<float>(getWidth()));
     // ビジュアライザ本体は WaveformDisplay / SpectrumDisplay が自前で描画する
-
-    // === FONT DEBUG (temporary): タイトル上端に1行で表示 ===
-    g.setColour(juce::Colours::lime);
-    g.setFont(juce::Font(juce::FontOptions(11.0f)));
-    juce::String dbg;
-    dbg << "Font=[" << customLookAndFeel.getJapaneseTypefaceName() << "]"
-        << " calls=" << customLookAndFeel.getTypefaceCallCount()
-        << "  [ASCII]hello 123  [JP]こんにちは シンセ";
-    g.drawText(dbg, 4, 2, getWidth() - 8, 12, juce::Justification::left);
 }
 
 // -----------------------------------------------------------------------------

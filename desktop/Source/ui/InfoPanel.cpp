@@ -5,45 +5,38 @@
 
 namespace synth {
 
-InfoPanel::InfoPanel()
-{
-    paramLabel.setFont(juce::FontOptions(11.0f));
-    paramLabel.setColour(juce::Label::textColourId, juce::Colour(0xffff8c00));
-    paramLabel.setJustificationType(juce::Justification::centredLeft);
-    addAndMakeVisible(paramLabel);
-
-    descLabel.setFont(juce::FontOptions(11.0f));
-    descLabel.setColour(juce::Label::textColourId, juce::Colour(0xffe0e0e0));
-    descLabel.setJustificationType(juce::Justification::centredLeft);
-    descLabel.setMinimumHorizontalScale(0.5f);
-    addAndMakeVisible(descLabel);
-}
-
 void InfoPanel::setInfo(const juce::String& paramId, const juce::String& description)
 {
-    paramLabel.setText(paramId, juce::dontSendNotification);
-    descLabel.setText(description, juce::dontSendNotification);
+    currentParamId = paramId;
+    currentDescription = description;
+    repaint();
 }
 
 void InfoPanel::paint(juce::Graphics& g)
 {
+    // 背景 + 上端の区切り線
     g.fillAll(juce::Colour(0xff1a1a1a));
     g.setColour(juce::Colour(0xff3a3a3a));
     g.drawHorizontalLine(0, 0.0f, static_cast<float>(getWidth()));
 
+    auto area = getLocalBounds().reduced(8, 4);
+
+    // 左端の "INFO" ラベル
     g.setColour(juce::Colour(0xff555555));
     g.setFont(juce::FontOptions(10.0f));
-    g.drawText("INFO", getLocalBounds().reduced(8, 0).removeFromLeft(40),
-               juce::Justification::centredLeft);
-}
+    g.drawText("INFO", area.removeFromLeft(40), juce::Justification::topLeft);
 
-void InfoPanel::resized()
-{
-    auto area = getLocalBounds().reduced(8, 6);
-    area.removeFromLeft(48); // "INFO" ラベル分のスペース
+    // パラメータ ID（アクセント色、英字）
+    auto paramArea = area.removeFromLeft(180);
+    g.setColour(juce::Colour(0xffff8c00));
+    g.setFont(juce::FontOptions(11.0f));
+    g.drawText(currentParamId, paramArea, juce::Justification::topLeft);
 
-    paramLabel.setBounds(area.removeFromLeft(150));
-    descLabel.setBounds(area);
+    // 解説文（日本語、複数行折り返し、最大4行）
+    g.setColour(juce::Colour(0xffe0e0e0));
+    g.setFont(juce::FontOptions(10.0f));
+    g.drawFittedText(currentDescription, area,
+                     juce::Justification::topLeft, 4);
 }
 
 } // namespace synth

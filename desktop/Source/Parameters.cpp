@@ -63,14 +63,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
         StringArray{ "LP", "HP", "BP" },
         0));
 
-    // 500Hz が中央になる対数スケール
+    // 500Hz が中央になる対数スケール（JUCE 8 では setSkewForCentre を使う）
     {
-        const float skew = NormalisableRange<float>::skewFactorFromMidPoint(
-            20.0f, 20000.0f, 500.0f);
+        NormalisableRange<float> cutoffRange { 20.0f, 20000.0f, 0.0f };
+        cutoffRange.setSkewForCentre(500.0f);
         layout.add(std::make_unique<AudioParameterFloat>(
             ParameterID{ ParamID::FilterCutoff, 1 },
             "Filter Cutoff",
-            NormalisableRange<float>{ 20.0f, 20000.0f, 0.0f, skew },
+            cutoffRange,
             2000.0f));
     }
 

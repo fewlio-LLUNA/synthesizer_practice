@@ -7,6 +7,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_utils/juce_audio_utils.h>  // AudioVisualiserComponent, MidiKeyboardComponent
 #include <atomic>
 #include <memory>
 #include "Parameters.h"

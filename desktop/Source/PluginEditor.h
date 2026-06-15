@@ -9,6 +9,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_utils/juce_audio_utils.h>  // MidiKeyboardComponent
 #include <juce_gui_extra/juce_gui_extra.h>
 
 #include "PluginProcessor.h"

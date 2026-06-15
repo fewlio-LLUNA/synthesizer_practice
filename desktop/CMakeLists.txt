@@ -140,3 +140,8 @@ target_compile_definitions(synthesizer_practice
     JUCE_USE_CURL=0
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+# MSVC: UTF-8 でソース・実行時文字列を扱う（C4819 警告と日本語文字列リテラルの誤解釈を解消）
+if(MSVC)
+  target_compile_options(synthesizer_practice PRIVATE /utf-8)
+endif()

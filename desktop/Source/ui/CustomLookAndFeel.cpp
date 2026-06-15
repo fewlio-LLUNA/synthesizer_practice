@@ -216,6 +216,7 @@ void CustomLookAndFeel::drawPopupMenuItem(
 // -----------------------------------------------------------------------------
 juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& font)
 {
+    ++typefaceCallCount;
     // JUCE 8 では Font::withTypefaceName が削除されたため、FontOptions で再構築する。
     // サイズ・スタイルは元のフォントから継承し、typeface 名だけ日本語対応に差し替える。
     return juce::Typeface::createSystemTypefaceFor(

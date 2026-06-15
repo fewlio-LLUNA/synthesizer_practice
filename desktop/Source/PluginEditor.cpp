@@ -171,6 +171,24 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(COL_ACCENT.withAlpha(0.4f));
     g.drawHorizontalLine(HDR_H - 1, 0.0f, static_cast<float>(getWidth()));
     // ビジュアライザ本体は WaveformDisplay / SpectrumDisplay が自前で描画する
+
+    // === FONT DEBUG (temporary): 採用フォント名と getTypefaceForFont 呼び出し回数を表示 ===
+    g.setColour(juce::Colours::lime);
+    g.setFont(juce::Font(juce::FontOptions(11.0f)));
+    juce::String dbg;
+    dbg << "Font=[" << customLookAndFeel.getJapaneseTypefaceName() << "]"
+        << " calls=" << customLookAndFeel.getTypefaceCallCount();
+    g.drawText(dbg, 4, getHeight() - 16, getWidth() - 8, 14,
+               juce::Justification::left);
+
+    // 比較用に「ASCII / 日本語」 を直接描画して、文字化けの範囲を画面上で見る
+    g.setColour(juce::Colours::yellow);
+    g.setFont(juce::Font(juce::FontOptions(14.0f)));
+    g.drawText("[ASCII test] hello 123", 4, getHeight() - 34, 360, 16,
+               juce::Justification::left);
+    g.setColour(juce::Colours::cyan);
+    g.drawText("[JP test] こんにちは シンセ", 380, getHeight() - 34, 400, 16,
+               juce::Justification::left);
 }
 
 // -----------------------------------------------------------------------------

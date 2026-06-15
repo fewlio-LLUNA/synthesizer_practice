@@ -71,8 +71,9 @@ target_sources(synthesizer_practice
     Source/dsp/SynthVoice.cpp
 
     # UI（Session B / C / D 担当）
-    # Source/ui/CustomLookAndFeel.cpp
-    # Source/ui/RotaryKnob.cpp
+    Source/ui/CustomLookAndFeel.cpp  # Session B
+    Source/ui/RotaryKnob.cpp         # Session B
+    Source/ui/SectionPanel.cpp       # Session B
     # Source/ui/WaveformDisplay.cpp
     # Source/ui/SpectrumDisplay.cpp
 

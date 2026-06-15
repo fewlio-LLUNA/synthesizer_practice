@@ -32,11 +32,22 @@ void InfoPanel::paint(juce::Graphics& g)
     g.setFont(juce::FontOptions(11.0f));
     g.drawText(currentParamId, paramArea, juce::Justification::topLeft);
 
-    // 解説文（日本語、複数行折り返し、最大4行）
+    // 解説文（日本語）
+    // JUCE 8 の drawFittedText では日本語が化けるため、
+    // 改行で行分割して drawText で1行ずつ描画する（PluginEditor::paint と
+    // 同じ描画パスを通すと Windows のフォントフォールバックで日本語が出る）。
     g.setColour(juce::Colour(0xffe0e0e0));
-    g.setFont(juce::FontOptions(10.0f));
-    g.drawFittedText(currentDescription, area,
-                     juce::Justification::topLeft, 4);
+    g.setFont(juce::FontOptions(11.0f));
+
+    const int lineH = 13;
+    int y = area.getY();
+    for (auto& line : juce::StringArray::fromLines(currentDescription))
+    {
+        if (y + lineH > area.getBottom()) break;
+        g.drawText(line, area.getX(), y, area.getWidth(), lineH,
+                   juce::Justification::topLeft);
+        y += lineH;
+    }
 }
 
 } // namespace synth

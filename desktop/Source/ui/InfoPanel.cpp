@@ -19,6 +19,12 @@ void InfoPanel::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff3a3a3a));
     g.drawHorizontalLine(0, 0.0f, static_cast<float>(getWidth()));
 
+    // === DIAGNOSTIC: PluginEditor::paint と完全に同じ書き方の日本語描画テスト ===
+    g.setColour(juce::Colours::lime);
+    g.setFont(juce::Font(juce::FontOptions(11.0f)));
+    g.drawText("[InfoPanel-diag]こんにちは シンセ", 4, 0, getWidth() - 8, 14,
+               juce::Justification::left);
+
     auto area = getLocalBounds().reduced(8, 4);
 
     // 左端の "INFO" ラベル

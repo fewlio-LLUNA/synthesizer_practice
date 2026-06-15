@@ -199,8 +199,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク E: パラメータ管理 + プリセット + 解説
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: Session E (Claude Sonnet 4.6, 2026-06-15)
+- [x] 完了（ビルド未検証 — CMake/MSVC 環境で要確認）
 
 ### 触ってよいファイル
 - `Source/Parameters.cpp` （`createParameterLayout` の本体実装）

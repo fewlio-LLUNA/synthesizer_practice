@@ -76,8 +76,9 @@ target_sources(synthesizer_practice
     # Source/ui/WaveformDisplay.cpp
     # Source/ui/SpectrumDisplay.cpp
 
-    # プリセット（Session E 担当）
-    # Source/PresetManager.cpp
+    # パラメータ解説 + プリセット（Session E 担当）
+    Source/PresetManager.cpp
+    Source/Descriptions.cpp
 )
 
 # Source/ をインクルードパスに追加

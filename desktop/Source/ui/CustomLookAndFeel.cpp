@@ -129,28 +129,27 @@ void CustomLookAndFeel::drawRotarySlider(
     }
 }
 
+// JUCE 8 では「Yu Gothic UI」のような name 明示指定だと解決失敗で化けるが、
+// name 未指定だと Windows のフォントフォールバックで日本語が表示される。
+// よって全フォント取得は name を渡さず、サイズのみの FontOptions を返す。
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label& /*label*/)
 {
-    return juce::Font(juce::FontOptions(japaneseTypefaceName, 11.0f, juce::Font::plain));
+    return juce::Font(juce::FontOptions(11.0f));
 }
 
 juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox& box)
 {
-    return juce::Font(juce::FontOptions(japaneseTypefaceName,
-                                         juce::jmin(15.0f, (float)box.getHeight() * 0.85f),
-                                         juce::Font::plain));
+    return juce::Font(juce::FontOptions(juce::jmin(15.0f, (float)box.getHeight() * 0.85f)));
 }
 
 juce::Font CustomLookAndFeel::getPopupMenuFont()
 {
-    return juce::Font(juce::FontOptions(japaneseTypefaceName, 13.0f, juce::Font::plain));
+    return juce::Font(juce::FontOptions(13.0f));
 }
 
 juce::Font CustomLookAndFeel::getTextButtonFont(juce::TextButton& /*button*/, int buttonHeight)
 {
-    return juce::Font(juce::FontOptions(japaneseTypefaceName,
-                                         juce::jmin(15.0f, (float)buttonHeight * 0.6f),
-                                         juce::Font::plain));
+    return juce::Font(juce::FontOptions(juce::jmin(15.0f, (float)buttonHeight * 0.6f)));
 }
 
 void CustomLookAndFeel::drawButtonBackground(

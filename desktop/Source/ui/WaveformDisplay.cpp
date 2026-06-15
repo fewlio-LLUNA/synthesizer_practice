@@ -28,8 +28,8 @@ void WaveformDisplay::paint(juce::Graphics& g)
     // ヘッダー領域
     auto header = getLocalBounds().removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    // タイトル「時間波形」 — JUCE 8 では FontOptions を使う
-    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
+    // タイトル「時間波形」 — bold 付きだと日本語フォントが解決できないため plain で表示
+    g.setFont(juce::Font(juce::FontOptions(13.0f)));
     g.setColour(kAccent);
     const int titleWidth = 60;
     g.drawText("時間波形", header.removeFromLeft(titleWidth),

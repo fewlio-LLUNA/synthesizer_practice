@@ -142,7 +142,8 @@ void SpectrumDisplay::paint(juce::Graphics& g)
     auto bounds = getLocalBounds();
     auto header = bounds.removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
+    // bold 付きだと日本語フォント解決に失敗するため plain で表示
+    g.setFont(juce::Font(juce::FontOptions(13.0f)));
     g.setColour(kAccent);
     g.drawText("スペクトラム", header.removeFromLeft(80),
                juce::Justification::centredLeft, true);

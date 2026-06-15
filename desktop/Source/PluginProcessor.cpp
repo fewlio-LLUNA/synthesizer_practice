@@ -1,26 +1,36 @@
 // =============================================================================
-// PluginProcessor.cpp — AudioProcessor 実装（スタブ）
-//
-// TODO: Session A が DSP 結線（Synthesiser へのボイス登録、エフェクトチェーン）、
-//       Session D が GUI 連動を実装する。
-// 詳細は docs/desktop-design.md §4（DSP 信号フロー） を参照。
+// PluginProcessor.cpp — AudioProcessor 実装
 // =============================================================================
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "dsp/SynthVoice.h"
 #include "dsp/SynthSound.h"
+#include "dsp/Drive.h"
+#include "dsp/Delay.h"
+#include "dsp/Reverb.h"
 
 namespace synth {
 
+// PluginProcessor.h で前方宣言した EffectsChain の実体
+struct SynthAudioProcessor::EffectsChain
+{
+    Drive        drive;
+    Delay        delay;
+    ReverbEffect reverb;
+};
+
+// -----------------------------------------------------------------------------
 SynthAudioProcessor::SynthAudioProcessor()
     : juce::AudioProcessor(BusesProperties().withOutput("Output",
                                                        juce::AudioChannelSet::stereo(),
                                                        true)),
-      apvts(*this, nullptr, "PARAMETERS", createParameterLayout())
+      apvts(*this, nullptr, "PARAMETERS", createParameterLayout()),
+      effectsChain(std::make_unique<EffectsChain>())
 {
-    // ボイスとサウンドの登録（Session A が拡張）
+    // MAX_VOICES 分のボイスとサウンドを登録
     synth.addSound(new SynthSound());
-    synth.addVoice(new SynthVoice());
+    for (int i = 0; i < MAX_VOICES; ++i)
+        synth.addVoice(new SynthVoice());
 
     audioVisualiser.setBufferSize(512);
     audioVisualiser.setSamplesPerBlock(64);
@@ -28,20 +38,60 @@ SynthAudioProcessor::SynthAudioProcessor()
 
 SynthAudioProcessor::~SynthAudioProcessor() = default;
 
+// -----------------------------------------------------------------------------
 void SynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     synth.setCurrentPlaybackSampleRate(sampleRate);
     audioVisualiser.clear();
 
-    // TODO: Session A — 各 DSP モジュール（Filter, Envelope, Effects）を prepare
-    juce::ignoreUnused(samplesPerBlock);
+    // ボイスを準備（モノラル ProcessSpec を渡す）
+    const juce::dsp::ProcessSpec voiceSpec
+    {
+        sampleRate,
+        static_cast<juce::uint32>(samplesPerBlock),
+        1  // モノラルで処理
+    };
+    for (int i = 0; i < synth.getNumVoices(); ++i)
+        if (auto* voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
+            voice->prepare(voiceSpec, apvts);
+
+    // マスターエフェクトチェーンを準備（ステレオ ProcessSpec）
+    const juce::dsp::ProcessSpec stereoSpec
+    {
+        sampleRate,
+        static_cast<juce::uint32>(samplesPerBlock),
+        2
+    };
+    effectsChain->drive.prepare(stereoSpec);
+    effectsChain->delay.prepare(stereoSpec);
+    effectsChain->reverb.prepare(stereoSpec);
+
+    // パラメータポインタを取得
+    auto get = [&](const char* id) -> std::atomic<float>*
+    {
+        return apvts.getRawParameterValue(id);
+    };
+
+    pMasterVolume  = get(ParamID::MasterVolume);
+    pDriveType     = get(ParamID::DriveType);
+    pDriveAmount   = get(ParamID::DriveAmount);
+    pDriveMix      = get(ParamID::DriveMix);
+    pDelayTime     = get(ParamID::DelayTime);
+    pDelayFeedback = get(ParamID::DelayFeedback);
+    pDelayMix      = get(ParamID::DelayMix);
+    pReverbDecay   = get(ParamID::ReverbDecay);
+    pReverbMix     = get(ParamID::ReverbMix);
 }
 
+// -----------------------------------------------------------------------------
 void SynthAudioProcessor::releaseResources()
 {
-    // TODO: 必要に応じてリソース解放
+    effectsChain->drive.reset();
+    effectsChain->delay.reset();
+    effectsChain->reverb.reset();
 }
 
+// -----------------------------------------------------------------------------
 bool SynthAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
     const auto& mainOut = layouts.getMainOutputChannelSet();
@@ -49,6 +99,7 @@ bool SynthAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) con
         || mainOut == juce::AudioChannelSet::mono();
 }
 
+// -----------------------------------------------------------------------------
 void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
@@ -61,12 +112,40 @@ void SynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     // シンセに渡して音を生成
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
-    // TODO: Session A — エフェクトチェーン（drive → delay → reverb）を適用
+    // マスターエフェクトチェーン（Drive → Delay → Reverb）
+    {
+        auto load = [](std::atomic<float>* p, float def) -> float
+        {
+            return (p != nullptr) ? p->load() : def;
+        };
 
-    // ビジュアライザに送る（モノラル化）
+        const auto driveType = static_cast<DriveType>(
+            static_cast<int>(load(pDriveType, 0.0f)));
+
+        effectsChain->drive.process(buffer,
+            driveType,
+            load(pDriveAmount,   0.0f),
+            load(pDriveMix,      0.0f));
+
+        effectsChain->delay.process(buffer,
+            load(pDelayTime,     0.3f),
+            load(pDelayFeedback, 0.3f),
+            load(pDelayMix,      0.0f));
+
+        effectsChain->reverb.process(buffer,
+            load(pReverbDecay,   1.5f),
+            load(pReverbMix,     0.0f));
+    }
+
+    // マスターボリューム
+    const float masterVol = (pMasterVolume != nullptr) ? pMasterVolume->load() : 0.5f;
+    buffer.applyGain(masterVol);
+
+    // ビジュアライザに送る
     audioVisualiser.pushBuffer(buffer);
 }
 
+// -----------------------------------------------------------------------------
 juce::AudioProcessorEditor* SynthAudioProcessor::createEditor()
 {
     return new SynthAudioProcessorEditor(*this);
@@ -74,21 +153,16 @@ juce::AudioProcessorEditor* SynthAudioProcessor::createEditor()
 
 void SynthAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-    // APVTS の状態をシリアライズ
     if (auto state = apvts.copyState(); state.isValid())
-    {
         if (auto xml = state.createXml())
             copyXmlToBinary(*xml, destData);
-    }
 }
 
 void SynthAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     if (auto xml = getXmlFromBinary(data, sizeInBytes))
-    {
         if (xml->hasTagName(apvts.state.getType()))
             apvts.replaceState(juce::ValueTree::fromXml(*xml));
-    }
 }
 
 } // namespace synth

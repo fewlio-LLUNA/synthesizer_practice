@@ -2,10 +2,13 @@
 // PluginProcessor.h — AudioProcessor 本体（音処理のエントリポイント）
 //
 // このファイルは共有資産。public I/F の変更は周知必須。
+// Session A: プライベートメンバーにエフェクトチェーンとパラメータポインタを追加。
 // =============================================================================
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <atomic>
+#include <memory>
 #include "Parameters.h"
 
 namespace synth {
@@ -58,6 +61,24 @@ private:
 
     // ビジュアライザ用（Session C が描画読み出し、Processor が processBlock 時に書き込み）
     juce::AudioVisualiserComponent audioVisualiser { 1 }; // モノラル
+
+    // Session A: マスターエフェクトチェーン（Drive → Delay → Reverb）
+    // 前方宣言で DSP ヘッダーを公開しない
+    struct EffectsChain;
+    std::unique_ptr<EffectsChain> effectsChain;
+
+    // Session A: processBlock 内で load() するパラメータポインタ
+    std::atomic<float>* pMasterVolume  { nullptr };
+    std::atomic<float>* pDriveType     { nullptr };
+    std::atomic<float>* pDriveAmount   { nullptr };
+    std::atomic<float>* pDriveMix      { nullptr };
+    std::atomic<float>* pDelayTime     { nullptr };
+    std::atomic<float>* pDelayFeedback { nullptr };
+    std::atomic<float>* pDelayMix      { nullptr };
+    std::atomic<float>* pReverbDecay   { nullptr };
+    std::atomic<float>* pReverbMix     { nullptr };
+
+    static constexpr int MAX_VOICES = 8;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessor)
 };

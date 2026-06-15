@@ -41,8 +41,8 @@ worktree 上で完結させ、main にマージする。
 
 ## タスク A: DSP コア
 
-- [ ] 担当中: _未割当_
-- [ ] 完了
+- [x] 担当中: Session A (desktop/session-A/dsp)
+- [x] 完了
 
 ### 触ってよいファイル
 - `Source/dsp/Oscillator.{h,cpp}` （新規）

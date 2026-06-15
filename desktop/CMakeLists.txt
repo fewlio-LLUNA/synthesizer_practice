@@ -69,6 +69,14 @@ target_sources(synthesizer_practice
 
     # DSP（Session A 担当）
     Source/dsp/SynthVoice.cpp
+    Source/dsp/Oscillator.cpp
+    Source/dsp/Filter.cpp
+    Source/dsp/Envelope.cpp
+    Source/dsp/LFO.cpp
+    Source/dsp/Noise.cpp
+    Source/dsp/Drive.cpp
+    Source/dsp/Delay.cpp
+    Source/dsp/Reverb.cpp
 
     # UI（Session B / C / D 担当）
     Source/ui/CustomLookAndFeel.cpp  # Session B

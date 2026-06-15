@@ -28,15 +28,15 @@ void WaveformDisplay::paint(juce::Graphics& g)
     // ヘッダー領域
     auto header = getLocalBounds().removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    // タイトル「時間波形」
-    g.setFont(juce::Font(13.0f, juce::Font::bold));
+    // タイトル「時間波形」 — JUCE 8 では FontOptions を使う
+    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
     g.setColour(kAccent);
     const int titleWidth = 60;
     g.drawText("時間波形", header.removeFromLeft(titleWidth),
                juce::Justification::centredLeft, true);
 
     // キャプション
-    g.setFont(juce::Font(11.0f));
+    g.setFont(juce::Font(juce::FontOptions(11.0f)));
     g.setColour(kTextDim);
     g.drawText("Time Domain", header, juce::Justification::centredLeft, true);
 }

@@ -142,12 +142,12 @@ void SpectrumDisplay::paint(juce::Graphics& g)
     auto bounds = getLocalBounds();
     auto header = bounds.removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    g.setFont(juce::Font(13.0f, juce::Font::bold));
+    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
     g.setColour(kAccent);
     g.drawText("スペクトラム", header.removeFromLeft(80),
                juce::Justification::centredLeft, true);
 
-    g.setFont(juce::Font(11.0f));
+    g.setFont(juce::Font(juce::FontOptions(11.0f)));
     g.setColour(kTextDim);
     g.drawText("Frequency Domain", header, juce::Justification::centredLeft, true);
 
@@ -179,7 +179,7 @@ void SpectrumDisplay::drawSpectrum(juce::Graphics& g, juce::Rectangle<int> bound
         { 10000.0f, "10k"  },
     };
 
-    g.setFont(juce::Font(9.0f));
+    g.setFont(juce::Font(juce::FontOptions(9.0f)));
     for (const auto& fl : freqLabels)
     {
         const float xNorm = freqToX(fl.freq);

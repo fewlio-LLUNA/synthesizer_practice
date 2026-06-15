@@ -28,6 +28,9 @@ public:
                           juce::Slider& slider) override;
 
     juce::Font getLabelFont(juce::Label& label) override;
+    juce::Font getComboBoxFont(juce::ComboBox& box) override;
+    juce::Font getPopupMenuFont() override;
+    juce::Font getTextButtonFont(juce::TextButton& button, int buttonHeight) override;
 
     void drawButtonBackground(juce::Graphics& g, juce::Button& button,
                               const juce::Colour& backgroundColour,

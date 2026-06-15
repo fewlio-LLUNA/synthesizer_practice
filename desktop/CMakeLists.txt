@@ -73,8 +73,8 @@ target_sources(synthesizer_practice
     # UI（Session B / C / D 担当）
     # Source/ui/CustomLookAndFeel.cpp
     # Source/ui/RotaryKnob.cpp
-    # Source/ui/WaveformDisplay.cpp
-    # Source/ui/SpectrumDisplay.cpp
+    Source/ui/WaveformDisplay.cpp   # Session C
+    Source/ui/SpectrumDisplay.cpp   # Session C
 
     # プリセット（Session E 担当）
     # Source/PresetManager.cpp

@@ -216,9 +216,12 @@ void CustomLookAndFeel::drawPopupMenuItem(
 // -----------------------------------------------------------------------------
 juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& font)
 {
-    // 元のフォントのサイズ・スタイルを維持しつつ typeface 名だけ差し替える
+    // JUCE 8 では Font::withTypefaceName が削除されたため、FontOptions で再構築する。
+    // サイズ・スタイルは元のフォントから継承し、typeface 名だけ日本語対応に差し替える。
     return juce::Typeface::createSystemTypefaceFor(
-        font.withTypefaceName(japaneseTypefaceName));
+        juce::FontOptions(japaneseTypefaceName,
+                          font.getHeight(),
+                          font.getStyleFlags()));
 }
 
 } // namespace synth

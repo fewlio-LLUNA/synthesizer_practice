@@ -25,6 +25,9 @@
 #include "ui/VoicePanel.h"
 #include "ui/MasterPanel.h"
 #include "ui/InfoPanel.h"
+#include "ui/WaveformDisplay.h"
+#include "ui/SpectrumDisplay.h"
+#include "PresetManager.h"
 
 namespace synth {
 
@@ -64,11 +67,18 @@ private:
     // MIDIキーボード
     juce::MidiKeyboardComponent keyboard;
 
-    // ビジュアライザ領域（Session C の成果物が入るまでのプレースホルダー）
-    juce::Rectangle<int> visualizerBounds;
+    // ビジュアライザ（Session C の成果物を統合）
+    WaveformDisplay waveformDisplay;
+    SpectrumDisplay spectrumDisplay;
+
+    // プリセット管理（Session E の PresetManager）
+    PresetManager presetManager;
 
     // 全パネルのホバーコールバックを InfoPanel に接続する
     void setupHoverCallbacks();
+
+    // 内蔵プリセットを presetBox に読み込み、選択変更時の適用を仕込む
+    void setupPresetBox();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SynthAudioProcessorEditor)
 };

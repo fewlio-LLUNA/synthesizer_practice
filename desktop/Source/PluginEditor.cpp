@@ -52,7 +52,10 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
       voicePanel     (p.getAPVTS()),
       masterPanel    (p.getAPVTS()),
       // MIDIキーボード
-      keyboard(p.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard)
+      keyboard(p.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard),
+      // ビジュアライザ（Session C）
+      waveformDisplay(p.getAudioVisualiser()),
+      spectrumDisplay(p)
 {
     setSize(WIN_W, WIN_H);
     setResizable(true, true);
@@ -64,9 +67,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     titleLabel.setColour(juce::Label::textColourId, COL_TEXT);
     addAndMakeVisible(titleLabel);
 
-    // プリセット（Session E の PresetManager で項目を追加する）
-    presetBox.addItem("Init", 1);
-    presetBox.setSelectedId(1, juce::dontSendNotification);
+    setupPresetBox();
     addAndMakeVisible(presetBox);
 
     // Reset ボタン — 全パラメータをデフォルト値に戻す
@@ -93,7 +94,36 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     addAndMakeVisible(infoPanel);
     addAndMakeVisible(keyboard);
 
+    // ビジュアライザ
+    addAndMakeVisible(waveformDisplay);
+    addAndMakeVisible(spectrumDisplay);
+
     setupHoverCallbacks();
+}
+
+// -----------------------------------------------------------------------------
+// プリセットボックスのセットアップ
+// PresetManager の内蔵プリセットを ComboBox に登録し、選択変更で適用する
+// -----------------------------------------------------------------------------
+void SynthAudioProcessorEditor::setupPresetBox()
+{
+    presetBox.addItem("— プリセット選択 —", 1);
+
+    const auto& presets = presetManager.getBuiltInPresets();
+    for (size_t i = 0; i < presets.size(); ++i)
+    {
+        // ComboBox の id は 1 以上の必要があるため、id = i + 2（1 はラベル用）
+        presetBox.addItem(presets[i].name, static_cast<int>(i) + 2);
+    }
+    presetBox.setSelectedId(1, juce::dontSendNotification);
+
+    presetBox.onChange = [this]
+    {
+        const int id = presetBox.getSelectedId();
+        if (id < 2) return; // ラベル選択は無視
+        const int index = id - 2;
+        presetManager.applyBuiltInPreset(processorRef.getAPVTS(), index);
+    };
 }
 
 SynthAudioProcessorEditor::~SynthAudioProcessorEditor() = default;
@@ -134,19 +164,7 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     // ヘッダー下線
     g.setColour(COL_ACCENT.withAlpha(0.4f));
     g.drawHorizontalLine(HDR_H - 1, 0.0f, static_cast<float>(getWidth()));
-
-    // ビジュアライザプレースホルダー（Session C の WaveformDisplay / SpectrumDisplay が入る）
-    // メンバ変数を破壊しないようにローカルコピーで操作する
-    auto vizArea = visualizerBounds;
-    g.setColour(COL_PANEL);
-    g.fillRect(vizArea);
-    g.setColour(COL_DIM);
-    g.drawRect(vizArea, 1);
-    g.setFont(juce::FontOptions(11.0f));
-
-    auto leftViz   = vizArea.removeFromLeft(vizArea.getWidth() / 2);
-    g.drawText("[ WaveformDisplay — Session C ]", leftViz,  juce::Justification::centred);
-    g.drawText("[ SpectrumDisplay — Session C ]", vizArea,  juce::Justification::centred);
+    // ビジュアライザ本体は WaveformDisplay / SpectrumDisplay が自前で描画する
 }
 
 // -----------------------------------------------------------------------------
@@ -164,7 +182,10 @@ void SynthAudioProcessorEditor::resized()
     presetBox.setBounds(hdr.removeFromRight(200).reduced(4, 12));
 
     // ── ビジュアライザ ──────────────────────────────────────────
-    visualizerBounds = area.removeFromTop(VIZ_H);
+    auto vizArea = area.removeFromTop(VIZ_H);
+    auto leftViz = vizArea.removeFromLeft(vizArea.getWidth() / 2);
+    waveformDisplay.setBounds(leftViz.reduced(4));
+    spectrumDisplay.setBounds(vizArea.reduced(4));
 
     // ── セクション 第1行 ────────────────────────────────────────
     auto row1 = area.removeFromTop(SEC_H);

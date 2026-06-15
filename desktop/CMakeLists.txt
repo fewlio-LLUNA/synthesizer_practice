@@ -70,13 +70,30 @@ target_sources(synthesizer_practice
     # DSP（Session A 担当）
     Source/dsp/SynthVoice.cpp
 
-    # UI（Session B / C / D 担当）
+    # UI プリミティブ（Session B 担当 — 完了後コメントを外す）
     # Source/ui/CustomLookAndFeel.cpp
     # Source/ui/RotaryKnob.cpp
+    # Source/ui/SectionPanel.cpp
+
+    # ビジュアライザ（Session C 担当 — 完了後コメントを外す）
     # Source/ui/WaveformDisplay.cpp
     # Source/ui/SpectrumDisplay.cpp
 
-    # プリセット（Session E 担当）
+    # Editor + セクションパネル（Session D 担当）
+    Source/ui/InfoPanel.cpp
+    Source/ui/OscillatorPanel.cpp
+    Source/ui/NoisePanel.cpp
+    Source/ui/FilterPanel.cpp
+    Source/ui/FilterEnvelopePanel.cpp
+    Source/ui/AmpEnvelopePanel.cpp
+    Source/ui/LfoPanel.cpp
+    Source/ui/DrivePanel.cpp
+    Source/ui/DelayPanel.cpp
+    Source/ui/ReverbPanel.cpp
+    Source/ui/VoicePanel.cpp
+    Source/ui/MasterPanel.cpp
+
+    # プリセット（Session E 担当 — 完了後コメントを外す）
     # Source/PresetManager.cpp
 )
 

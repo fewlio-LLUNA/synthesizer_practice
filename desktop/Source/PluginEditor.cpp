@@ -35,40 +35,6 @@ const juce::Colour COL_DIM    { 0xff888888 };
 
 namespace synth {
 
-// デフォルトフォントを日本語対応に切り替える（プロセス全体で一度設定すれば反映）
-static void ensureJapaneseFont()
-{
-    auto& lnf = juce::LookAndFeel::getDefaultLookAndFeel();
-
-    // Windows で日本語表示が可能なフォントを優先順に試す。
-    // ttc に複数フェイスが入っているケースで JUCE が "Yu Gothic UI" を返さないことが
-    // あるため、UI 付きと無しの両方、和名（ＭＳ ゴシック等）も候補に入れる。
-    const juce::StringArray candidates {
-        "Yu Gothic UI",
-        "Yu Gothic",
-        "Meiryo UI",
-        "Meiryo",
-        "MS UI Gothic",
-        "MS Gothic",
-        "ＭＳ ゴシック",
-        "BIZ UDGothic"
-    };
-    const auto available = juce::Font::findAllTypefaceNames();
-    for (const auto& name : candidates)
-    {
-        if (available.contains(name))
-        {
-            lnf.setDefaultSansSerifTypefaceName(name);
-            DBG("[Font] Using: " << name);
-            return;
-        }
-    }
-
-    // 事前検出に失敗した場合のフォールバック: 名前指定で強制設定（解決は JUCE 任せ）
-    lnf.setDefaultSansSerifTypefaceName("Yu Gothic");
-    DBG("[Font] Fallback to Yu Gothic (not found in findAllTypefaceNames)");
-}
-
 SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     : juce::AudioProcessorEditor(&p),
       processorRef(p),
@@ -91,7 +57,8 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
       waveformDisplay(p.getAudioVisualiser()),
       spectrumDisplay(p)
 {
-    ensureJapaneseFont();
+    // 日本語対応 LookAndFeel を全配下に適用
+    setLookAndFeel(&customLookAndFeel);
     setSize(WIN_W, WIN_H);
     setResizable(true, true);
     setResizeLimits(800, 500, 2400, 1440);
@@ -161,7 +128,11 @@ void SynthAudioProcessorEditor::setupPresetBox()
     };
 }
 
-SynthAudioProcessorEditor::~SynthAudioProcessorEditor() = default;
+SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
+{
+    // setLookAndFeel(&lnf) の解除（メンバ破棄前に必須）
+    setLookAndFeel(nullptr);
+}
 
 // -----------------------------------------------------------------------------
 // ホバーコールバック設定

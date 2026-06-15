@@ -27,6 +27,7 @@
 #include "ui/InfoPanel.h"
 #include "ui/WaveformDisplay.h"
 #include "ui/SpectrumDisplay.h"
+#include "ui/CustomLookAndFeel.h"
 #include "PresetManager.h"
 
 namespace synth {
@@ -42,6 +43,9 @@ public:
 
 private:
     SynthAudioProcessor& processorRef;
+
+    // 共通ルックアンドフィール（日本語フォント解決を含む）— 他メンバより先に初期化
+    CustomLookAndFeel customLookAndFeel;
 
     // ヘッダー
     juce::Label      titleLabel;

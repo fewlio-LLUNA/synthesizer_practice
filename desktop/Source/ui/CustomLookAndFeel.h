@@ -52,7 +52,15 @@ public:
                            const juce::Drawable* icon,
                            const juce::Colour* textColour) override;
 
+    /** すべてのフォント要求に対し、日本語対応 Typeface を返す。
+     *  JUCE 8 では setDefaultSansSerifTypefaceName だけでは
+     *  匿名指定の Font に対して typeface が切り替わらないため、
+     *  ここで強制的に日本語フォントを差し込む。 */
+    juce::Typeface::Ptr getTypefaceForFont(const juce::Font& font) override;
+
 private:
+    juce::String japaneseTypefaceName; // ctor で解決した実在フォント名を保持
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };
 

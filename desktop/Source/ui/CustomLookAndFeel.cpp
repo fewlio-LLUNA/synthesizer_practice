@@ -12,8 +12,32 @@ const juce::Colour CustomLookAndFeel::Accent      { 0xFFff8c00 };
 const juce::Colour CustomLookAndFeel::TextPrimary { 0xFFe0e0e0 };
 const juce::Colour CustomLookAndFeel::TextDim     { 0xFF888888 };
 
-CustomLookAndFeel::CustomLookAndFeel()
+// 利用可能な日本語フォントを優先順に試して採用する
+static juce::String pickJapaneseTypefaceName()
 {
+    const juce::StringArray candidates {
+        "Yu Gothic UI",
+        "Yu Gothic",
+        "Meiryo UI",
+        "Meiryo",
+        "MS UI Gothic",
+        "MS Gothic",
+        "ＭＳ ゴシック",
+        "BIZ UDGothic"
+    };
+    const auto available = juce::Font::findAllTypefaceNames();
+    for (const auto& name : candidates)
+        if (available.contains(name))
+            return name;
+    return "Yu Gothic"; // 最終フォールバック
+}
+
+CustomLookAndFeel::CustomLookAndFeel()
+    : japaneseTypefaceName(pickJapaneseTypefaceName())
+{
+    DBG("[Font] CustomLookAndFeel using: " << japaneseTypefaceName);
+    setDefaultSansSerifTypefaceName(japaneseTypefaceName);
+
     setColour(juce::ResizableWindow::backgroundColourId, Background);
     setColour(juce::DocumentWindow::backgroundColourId,  Background);
 
@@ -185,6 +209,16 @@ void CustomLookAndFeel::drawPopupMenuItem(
     g.setColour(isTicked ? Accent : (isActive ? TextPrimary : TextDim));
     g.drawFittedText(text, area.reduced(8, 0),
                      juce::Justification::centredLeft, 1);
+}
+
+// -----------------------------------------------------------------------------
+// すべてのフォント要求に日本語対応 Typeface を返す
+// -----------------------------------------------------------------------------
+juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& font)
+{
+    // 元のフォントのサイズ・スタイルを維持しつつ typeface 名だけ差し替える
+    return juce::Typeface::createSystemTypefaceFor(
+        font.withTypefaceName(japaneseTypefaceName));
 }
 
 } // namespace synth

@@ -78,14 +78,30 @@ target_sources(synthesizer_practice
     Source/dsp/Delay.cpp
     Source/dsp/Reverb.cpp
 
-    # UI（Session B / C / D 担当）
-    Source/ui/CustomLookAndFeel.cpp  # Session B
-    Source/ui/RotaryKnob.cpp         # Session B
-    Source/ui/SectionPanel.cpp       # Session B
+    # UI プリミティブ（Session B）
+    Source/ui/CustomLookAndFeel.cpp
+    Source/ui/RotaryKnob.cpp
+    Source/ui/SectionPanel.cpp
+
+    # ビジュアライザ（Session C — マージ後に有効化）
     # Source/ui/WaveformDisplay.cpp
     # Source/ui/SpectrumDisplay.cpp
 
-    # パラメータ解説 + プリセット（Session E 担当）
+    # Editor + セクションパネル（Session D）
+    Source/ui/InfoPanel.cpp
+    Source/ui/OscillatorPanel.cpp
+    Source/ui/NoisePanel.cpp
+    Source/ui/FilterPanel.cpp
+    Source/ui/FilterEnvelopePanel.cpp
+    Source/ui/AmpEnvelopePanel.cpp
+    Source/ui/LfoPanel.cpp
+    Source/ui/DrivePanel.cpp
+    Source/ui/DelayPanel.cpp
+    Source/ui/ReverbPanel.cpp
+    Source/ui/VoicePanel.cpp
+    Source/ui/MasterPanel.cpp
+
+    # パラメータ解説 + プリセット（Session E）
     Source/PresetManager.cpp
     Source/Descriptions.cpp
 )

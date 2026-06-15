@@ -28,17 +28,17 @@ void WaveformDisplay::paint(juce::Graphics& g)
     // ヘッダー領域
     auto header = getLocalBounds().removeFromTop(kHeaderHeight).reduced(8, 4);
 
-    // タイトル「時間波形」 — bold 付きだと日本語フォントが解決できないため plain で表示
-    g.setFont(juce::Font(juce::FontOptions(13.0f)));
+    // タイトル — JUCE 8 + Windows で日本語フォント解決が不安定なため英語化
+    g.setFont(juce::Font(juce::FontOptions(13.0f, juce::Font::bold)));
     g.setColour(kAccent);
-    const int titleWidth = 60;
-    g.drawText("時間波形", header.removeFromLeft(titleWidth),
+    const int titleWidth = 80;
+    g.drawText("Waveform", header.removeFromLeft(titleWidth),
                juce::Justification::centredLeft, true);
 
     // キャプション
     g.setFont(juce::Font(juce::FontOptions(11.0f)));
     g.setColour(kTextDim);
-    g.drawText("Time Domain", header, juce::Justification::centredLeft, true);
+    g.drawText("time-domain output", header, juce::Justification::centredLeft, true);
 }
 
 void WaveformDisplay::resized()

@@ -109,7 +109,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
 // -----------------------------------------------------------------------------
 void SynthAudioProcessorEditor::setupPresetBox()
 {
-    presetBox.addItem("— プリセット選択 —", 1);
+    presetBox.addItem("-- Select Preset --", 1);
 
     const auto& presets = presetManager.getBuiltInPresets();
     for (size_t i = 0; i < presets.size(); ++i)

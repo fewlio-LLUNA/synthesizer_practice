@@ -37,8 +37,6 @@ CustomLookAndFeel::CustomLookAndFeel()
 {
     DBG("[Font] CustomLookAndFeel using: " << japaneseTypefaceName);
     setDefaultSansSerifTypefaceName(japaneseTypefaceName);
-    // 英字フォントに日本語グリフが無い時の fallback として明示指定
-    juce::Font::setFallbackFontName(japaneseTypefaceName);
 
     setColour(juce::ResizableWindow::backgroundColourId, Background);
     setColour(juce::DocumentWindow::backgroundColourId,  Background);

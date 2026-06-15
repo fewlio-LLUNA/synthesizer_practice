@@ -171,7 +171,21 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     // ヘッダー下線
     g.setColour(COL_ACCENT.withAlpha(0.4f));
     g.drawHorizontalLine(HDR_H - 1, 0.0f, static_cast<float>(getWidth()));
-    // ビジュアライザ本体は WaveformDisplay / SpectrumDisplay が自前で描画する
+
+    // === DIAGNOSTIC: Editor 直下の paint で日本語描画 ===
+    g.setColour(juce::Colours::lime);
+    g.setFont(juce::Font(juce::FontOptions(11.0f)));
+    g.drawText("[Editor-diag]こんにちは シンセ A", 4, 2, getWidth() - 8, 14,
+               juce::Justification::left);
+
+    // AttributedString による描画（JUCE 8 の HarfBuzz パス）
+    {
+        juce::AttributedString s("[Editor-attr]こんにちは シンセ B");
+        s.setFont(juce::Font(juce::FontOptions(11.0f)));
+        s.setColour(juce::Colours::cyan);
+        s.draw(g, juce::Rectangle<float>(4.0f, 18.0f,
+                                          (float)getWidth() - 8.0f, 14.0f));
+    }
 }
 
 // -----------------------------------------------------------------------------

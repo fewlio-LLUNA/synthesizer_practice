@@ -19,11 +19,18 @@ void InfoPanel::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff3a3a3a));
     g.drawHorizontalLine(0, 0.0f, static_cast<float>(getWidth()));
 
-    // === DIAGNOSTIC: PluginEditor::paint と完全に同じ書き方の日本語描画テスト ===
+    // === DIAGNOSTIC: 2系統の描画パスをテスト ===
     g.setColour(juce::Colours::lime);
     g.setFont(juce::Font(juce::FontOptions(11.0f)));
-    g.drawText("[InfoPanel-diag]こんにちは シンセ", 4, 0, getWidth() - 8, 14,
+    g.drawText("[Info-drawText]こんにちは シンセ C", 4, 0, getWidth() - 8, 14,
                juce::Justification::left);
+    {
+        juce::AttributedString s("[Info-attr]こんにちは シンセ D");
+        s.setFont(juce::Font(juce::FontOptions(11.0f)));
+        s.setColour(juce::Colours::cyan);
+        s.draw(g, juce::Rectangle<float>(4.0f, 14.0f,
+                                          (float)getWidth() - 8.0f, 14.0f));
+    }
 
     auto area = getLocalBounds().reduced(8, 4);
 

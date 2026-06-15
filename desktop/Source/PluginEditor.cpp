@@ -206,6 +206,23 @@ void SynthAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(fontB);
     g.setColour(juce::Colours::cyan);
     g.drawText("[B]こんにちは シンセ", 320, 16, getWidth(), 14, juce::Justification::left);
+
+    // 方法 C: GlyphArrangement（描画パイプラインを迂回）
+    {
+        juce::GlyphArrangement ga;
+        ga.addLineOfText(fontB, "[C-GA]こんにちは シンセ", 4.0f, 44.0f);
+        g.setColour(juce::Colours::magenta);
+        ga.draw(g);
+    }
+
+    // 方法 D: AttributedString + Font(Typeface)
+    {
+        juce::AttributedString s("[D-Attr]こんにちは シンセ");
+        s.setFont(fontB);
+        s.setColour(juce::Colours::white);
+        s.draw(g, juce::Rectangle<float>(320.0f, 30.0f,
+                                         (float)getWidth() - 320.0f, 16.0f));
+    }
 }
 
 // -----------------------------------------------------------------------------

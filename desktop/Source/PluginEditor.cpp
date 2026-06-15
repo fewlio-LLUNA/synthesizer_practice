@@ -144,7 +144,8 @@ void SynthAudioProcessorEditor::setupHoverCallbacks()
 {
     auto hover = [this](const juce::String& paramId)
     {
-        infoPanel.setInfo(paramId, getDescription(paramId));
+        // 名前空間を明示（juce::Component::getDescription と衝突するため）
+        infoPanel.setInfo(paramId, synth::getDescription(paramId));
     };
 
     oscPanel.onParamHover       = hover;

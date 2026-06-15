@@ -35,6 +35,23 @@ const juce::Colour COL_DIM    { 0xff888888 };
 
 namespace synth {
 
+// デフォルトフォントを日本語対応に切り替える（プロセス全体で一度設定すれば反映）
+static void ensureJapaneseFont()
+{
+    auto& lnf = juce::LookAndFeel::getDefaultLookAndFeel();
+    // Windows 10/11 標準の Yu Gothic UI を優先。なければ Meiryo UI を試す
+    const juce::StringArray candidates { "Yu Gothic UI", "Meiryo UI", "MS Gothic" };
+    const auto available = juce::Font::findAllTypefaceNames();
+    for (const auto& name : candidates)
+    {
+        if (available.contains(name))
+        {
+            lnf.setDefaultSansSerifTypefaceName(name);
+            return;
+        }
+    }
+}
+
 SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
     : juce::AudioProcessorEditor(&p),
       processorRef(p),
@@ -57,6 +74,7 @@ SynthAudioProcessorEditor::SynthAudioProcessorEditor(SynthAudioProcessor& p)
       waveformDisplay(p.getAudioVisualiser()),
       spectrumDisplay(p)
 {
+    ensureJapaneseFont();
     setSize(WIN_W, WIN_H);
     setResizable(true, true);
     setResizeLimits(800, 500, 2400, 1440);

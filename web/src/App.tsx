@@ -13,7 +13,7 @@ import { MasterSection } from './components/sections/MasterSection';
 import { Keyboard } from './components/Keyboard';
 import { WaveformView } from './components/WaveformView';
 import { SpectrumView } from './components/SpectrumView';
-import { InfoPanel } from './components/InfoPanel';
+import { HoverTooltip } from './components/HoverTooltip';
 import { PresetBrowser } from './components/PresetBrowser';
 import { SynthEngine } from './audio/SynthEngine';
 import { SynthEngineProvider } from './audio/engineContext';
@@ -247,7 +247,8 @@ export default function App() {
 
         <Keyboard />
 
-        <InfoPanel paramId={hoveredParam} />
+        {/* ホバー中のパラメータ解説をカーソル近くに吹き出し表示する */}
+        <HoverTooltip paramId={hoveredParam} />
       </div>
     </SynthEngineProvider>
   );
